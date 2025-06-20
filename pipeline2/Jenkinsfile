@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'dinesh1105/myapp:latest'
+    }
+
+    stages {
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+                }
+            }
+        }
+
+        stage('Pull Docker Image') {
+            steps {
+                sh "docker pull ${IMAGE_NAME}"
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh "docker run --rm ${IMAGE_NAME}"
+            }
+        }
+    }
+}
